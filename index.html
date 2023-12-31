@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Classification Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+</head>
+<body>
+    <h1>Image Classification Demo</h1>
+    
+    <input type="file" id="imageInput" accept="image/*" onchange="classifyImage()">
+    <img id="selectedImage" width="300" style="display:none;">
+    
+    <h3>Result:</h3>
+    <p id="result"></p>
+
+    <script>
+        async function classifyImage() {
+            const imageInput = document.getElementById('imageInput');
+            const selectedImage = document.getElementById('selectedImage');
+            const resultElement = document.getElementById('result');
+            // Load the MobileNet model
+            const model = await mobilenet.load();
+            // Create an image element and set its source
+            const img = new Image();
+            img.src = URL.createObjectURL(imageInput.files[0]);
+            console.log('img.src: ', img)
+            // Once the image is loaded, display it and make predictions
+            img.onload = async () => {
+                selectedImage.src = img.src;
+                selectedImage.style.display = 'block';
+
+                // Make a prediction through the model
+                const predictions = await model.classify(img);
+                console.log('PREDICTIONS: ', predictions)
+                resultElement.textContent = `Prediction: ${predictions[0].className}`;
+            };
+        }
+    </script>
+</body>
+</html>
